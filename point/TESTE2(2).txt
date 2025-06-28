@@ -1,0 +1,33 @@
+
+--------------------------------------------------------------------------<TGA Sistemas (65)3325-0653>---
+CASTELO MAT. DE CONSTRUCÕES
+CNPJ: 07.726.544/0001-84 INSC. ESTADUAL: 13.312.662-5
+Av. Julio José de Campos S/N , Jd. Boa Esperança
+CEP 78380-000 Denise - MT Fone 65 3342-1920
+------------------------------------------------------------------------------------------------
+Venda Balcao (TEF)   Nr: 0626162                    Emissao: 29/04/2025  HORA: 09:57:28
+Cliente.: C00001-TESTE JOAO                                        
+Endereco:                                                                     Bairro:                               
+Cidade..:  MT                                                               Telefone:                     
+Vendedor: 059 -JOÃO PEDRO               CNPJ/CPF:                           Insc.Est:                   Cond.Pag: DINHEIRO          
+================================================================================================
+Codigo   Descricao                          Und Marca          Quant   Pr.Unit    Desc     Total
+================================================================================================
+020028   ACRILICA ACRILAR PREMIUM FOSCO BAS UN BRASILUX         1,00     90,00    0,00     90,00
+020029   ACRILICA ACRILAR PREMIUM FOSCO BAS UN BRASILUX         6,00     68,00    0,00    408,00
+------------------------------------------------------------------------------------------------
+ Observ: #BRC172  #BRB125                                              Total Bruto..:     498,00
+                                                                       Desconto:   0,00%    0,00
+                                                                       Total Liquido:     498,00
+                                                         
+ **** Parcelamento ****** 
+Vencto     Valor      Paga
+---------------------------
+ 29/04/2025    498,00  Sim
+                                              ______________________________________
+ Pedreiro:                                                  TESTE JOAO
+ 
+ 
+ 
+                       
+
