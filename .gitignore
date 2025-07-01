@@ -3,7 +3,7 @@
 *.log
 *.db
 
-db/
-point/
-log/
+db/*.db
+point/*.txt
+log/*.log
 
