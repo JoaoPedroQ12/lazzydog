@@ -1,3 +1,4 @@
+import os
 import re
 import glob
 import sqlite3
@@ -14,32 +15,33 @@ CODES = [
 
 
 def capturedate(notas):
-	for nota in notas:
-		with open(nota, encoding="latin-1") as file:
-			content = file.read()
-			nmov = re.search(r'Nr:\s*(\d+)', content)
-			date = re.search(r'Emissao:\s*(\d{2}/\d{2}/\d{4})', content)
-			client = re.search(r'Cliente\.\:\s*(.+)', content)
-			product = re.findall(r'(\d{6}\s+.+?\s+UN\s+\w+\s+[\d,.]+)', content)
-			color = re.findall(r'#\w+', content)
+    for nota in notas:
+        with open(nota, encoding="latin-1") as file:
+            content = file.read()
+            nmov = re.search(r'Nr:\s*(\d+)', content)
+            date = re.search(r'Emissao:\s*(\d{2}/\d{2}/\d{4})', content)
+            client = re.search(r'Cliente\.\:\s*(.+)', content)
+            product = re.findall(r'(\d{6}\s+.+?\s+UN\s+\w+\s+[\d,.]+)', content)
+            color = re.findall(r'#\w+', content)
 
-			if nmov and date and client and product:
-				return nmov.group(), date.group(), client.group(), product, color
+            if nmov and date and client and product:
+                os.remove(nota)
+                return nmov.group(), date.group(), client.group(), product, color
 
 def inserintodb(DB, nmov, date, client, products, color):
-	cursor = DB.cursor()
-	for item in products:
-		for code in CODES:
-			if item.find(code) != -1:
-				cursor.execute("""INSERT INTO recordink(nmov, client, data, produto, cor) VALUES(?, ?, ?, ?, ?)""", (nmov, date, client.strip(), item, str(color)))
-				DB.commit()
-	
+    cursor = DB.cursor()
+    for item in products:
+        for code in CODES:
+            if item.find(code) != -1:
+                cursor.execute("""INSERT INTO recordink(nmov, client, data, produto, cor) VALUES(?, ?, ?, ?, ?)""", (nmov, date, client.strip(), item, str(color)))
+                DB.commit()
+    
 def connectdb():
-	try:
-		db = sqlite3.connect(PATH.joinpath("db") / "dbink.db")
-		return db
-	except:
-		print("Something was wrong in connect db.")
+    try:
+        db = sqlite3.connect(PATH.joinpath("db") / "dbink.db")
+        return db
+    except:
+        print("Something was wrong in connect db.")
 
 nmov = ""
 date = ""
@@ -55,7 +57,7 @@ cursor = db.cursor()
 
 #Point for acess TXT
 notas = glob.iglob(os.path.join("point", "*.txt"))
-print(notas)
 
 nmov, date, client, product, color = capturedate(notas)
 inserintodb(connectdb(), nmov, date, client, product, color)
+

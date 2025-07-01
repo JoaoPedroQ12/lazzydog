@@ -1,0 +1,9 @@
+*.txt
+*.swp
+*.log
+*.db
+
+db/
+point/
+log/
+
