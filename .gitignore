@@ -3,4 +3,7 @@
 *.log
 *.db
 
+!db/
+!log/
+!point/
 
