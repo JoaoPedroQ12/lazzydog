@@ -1,9 +1,22 @@
+*~
 *.txt
 *.swp
 *.log
 *.db
+*DS_Store
+Thumbs.db
+
+.venv/
+venv/
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
 
 !db/
 !log/
 !point/
+
+.idea/
 
