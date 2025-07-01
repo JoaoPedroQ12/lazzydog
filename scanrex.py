@@ -25,16 +25,27 @@ def capturedate(notas):
             color = re.findall(r'#\w+', content)
 
             if nmov and date and client and product:
-                os.remove(nota)
                 return nmov.group(), date.group(), client.group(), product, color
 
 def inserintodb(DB, nmov, date, client, products, color):
     cursor = DB.cursor()
-    for item in products:
-        for code in CODES:
-            if item.find(code) != -1:
-                cursor.execute("""INSERT INTO recordink(nmov, client, data, produto, cor) VALUES(?, ?, ?, ?, ?)""", (nmov, date, client.strip(), item, str(color)))
-                DB.commit()
+    try:
+        for item in products:
+            for code in CODES:
+                if item.find(code) != -1:
+                    cursor.execute("""INSERT INTO recordink(nmov, client, data, produto, cor) VALUES(?, ?, ?, ?, ?)""", (nmov, date, client.strip(), item, str(color)))
+                    DB.commit()
+    except Exception as e:
+        print(f"Houve um erro em inserir no DB: {e}")
+    finally:
+        cursor.close()
+
+def delete_file(files):
+    try:
+        for file in files:
+            os.remove(file)
+    except Exception as e:
+        print(f"Houve um erro ao deletar os arquivos {e}")
     
 def connectdb():
     try:
@@ -49,15 +60,15 @@ client = ""
 product = ""
 color = ""
 
+db = connectdb()
+
 path_db = Path(__file__).resolve().parent
 
-#Db connecting
-db = sqlite3.connect(path_db.joinpath("db") / "dbink.db")
-cursor = db.cursor()
-
 #Point for acess TXT
-notas = glob.iglob(os.path.join("point", "*.txt"))
+notas = list(glob.glob(os.path.join("point", "*.txt")))
 
 nmov, date, client, product, color = capturedate(notas)
-inserintodb(connectdb(), nmov, date, client, product, color)
+inserintodb(db, nmov, date, client, product, color)
+delete_file(notas)
+db.close()
 
