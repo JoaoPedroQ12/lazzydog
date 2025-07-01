@@ -9,6 +9,8 @@ Thumbs.db
 .venv/
 venv/
 
+syntastic/
+
 __pycache__/
 *.pyc
 *.pyo
