@@ -15,6 +15,7 @@ CODES = [
 
 
 def capturedate(notas):
+    result = []
     for nota in notas:
         with open(nota, encoding="latin-1") as file:
             content = file.read()
@@ -25,7 +26,8 @@ def capturedate(notas):
             color = re.findall(r'#\w+', content)
 
             if nmov and date and client and product:
-                return nmov.group(), date.group(), client.group(), product, color
+                result.append((nmov.group(), date.group(), client.group(), product, color))
+    return result
 
 def inserintodb(DB, nmov, date, client, products, color):
     cursor = DB.cursor()
@@ -33,7 +35,7 @@ def inserintodb(DB, nmov, date, client, products, color):
         for item in products:
             for code in CODES:
                 if item.find(code) != -1:
-                    cursor.execute("""INSERT INTO recordink(nmov, client, data, produto, cor) VALUES(?, ?, ?, ?, ?)""", (nmov, date, client.strip(), item, str(color)))
+                    cursor.execute("""INSERT INTO recordink(nmov, client, data, produto, cor) VALUES(?, ?, ?, ?, ?)""", (nmov, client.strip(), date, item, str(color)))
                     DB.commit()
     except Exception as e:
         print(f"Houve um erro em inserir no DB: {e}")
@@ -67,8 +69,12 @@ path_db = Path(__file__).resolve().parent
 #Point for acess TXT
 notas = list(glob.glob(os.path.join("point", "*.txt")))
 
-nmov, date, client, product, color = capturedate(notas)
-inserintodb(db, nmov, date, client, product, color)
+results = capturedate(notas)
+
+for date in results:
+    nmov, date, client, product, color = date
+    inserintodb(db, nmov, date, client, product, color)
+
 delete_file(notas)
 db.close()
 
