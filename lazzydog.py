@@ -22,7 +22,12 @@ def run_script(script):
 
 class RexLeu(FileSystemEventHandler):
     def on_created(self, event: FileSystemEvent) -> None:
-        run_script(script)
+        if not event.is_directory and event.src_path.endswith(".txt"):
+            time.sleep(0.5)
+            if os.path.exists(event.src_path) and os.path.getsize(event.src_path) > 0:
+                run_script(script)
+            else:
+                print("Não foi possivel ler o arquivo.")
 
 class LogHandler(FileSystemEventHandler):
     def __init__(self, log_file):
