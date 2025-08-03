@@ -23,7 +23,7 @@ def run_script(script):
 class RexLeu(FileSystemEventHandler):
     def on_created(self, event: FileSystemEvent) -> None:
         if not event.is_directory and event.src_path.endswith(".txt"):
-            time.sleep(0.5)
+            time.sleep(3)
             if os.path.exists(event.src_path) and os.path.getsize(event.src_path) > 0:
                 run_script(script)
             else:
