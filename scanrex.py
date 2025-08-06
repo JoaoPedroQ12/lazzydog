@@ -10,7 +10,7 @@ CODES = [
     '020030', '020029', '020028', '020027', '020026', '020025',
     '020024', '020023', '020022', '020021', '020020', '020019',
     '020018', '020017', '020016', '020015', '020014', '020013',
-    '020012'
+    '020012', '020037', '020038', '020039'
 ]
 
 class note:
@@ -21,35 +21,22 @@ class note:
         self.product = product
         self.color = color
 
-    def get_code_product(self, product: list) -> list:
-        """Função retorna somente os codigos dos produtos'"""
-        codes = []
+    def get_it(self, product: list, regex: str) -> list:
+        """Função que retorna qualquer item dando uma lista e um padrao regex""""
+        output = []
         for item in product:
-            code = re.search(r'(\d{6})')
-            codes.append(code)
-        return codes
-
-    def base(self, product):
-        pass
-
-    def price(self, product):
-        pass
+            result = re.search(regex)
+            output.append(result)
+        return output
 
 class paint_can(note):
     
-    CODES = {'020036':'A', '020035':'A', '020034':'A', '020033':'A', '020032':'A', '020031':'A',
-             '020030':'A', '020029':'A', '020028':'A', '020027':'A', '020026':'A', '020025':'A',
-             '020024':'A', '020023':'A', '020022':'A', '020021':'A', '020020':'A', '020019':'A',
-             '020018':'A', '020017':'A', '020016':'A', '020015':'A', '020014':'A', '020013':'A',
-             '020012':'A'}
+    CODES = {'020036':'A', '020035':'A', '020034':'A', '020033':'C', '020032':'B', '020031':'A',
+             '020030':'C', '020029':'B', '020028':'A', '020027':'C', '020026':'B', '020025':'A',
+             '020024':'C', '020023':'B', '020022':'A', '020021':'B', '020020':'A', '020019':'B',
+             '020018':'A', '020017':'C', '020016':'B', '020015':'A', '020014':'C', '020013':'B',
+             '020012':'A', '020037':'A', '020038':'B', '020039':'C'}
 
-    def its_paint(self, products: list) -> int:
-        """Função recebe os codigos dos produtos e retorn 1 se e uma lata de tinta e 0 caso não"""
-        flag = 0
-        for item in products:
-            if item == CODES.keys():
-                flag += 1
-        return flag
 
     def base_paint(self, code: str) -> str:
         """Função retorna a base referente ao codigo da tinta"""
