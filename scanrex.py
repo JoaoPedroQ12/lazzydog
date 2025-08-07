@@ -46,8 +46,27 @@ class paint_can(note):
 class verefication(note):
     pass
 
-class send(verefication):
-    pass
+class conection(verefication):
+    def __ini__(self, path)
+        self.path = path
+        self.connection = connect(self.path)
+
+    def connect(self, path_db):
+        try:
+            db = sqlite3.connect(path_db)
+            return db
+        except Excepetion as e:
+            print(f'Houve um erro ao conectar no db:{e}')
+    
+    def cursor(self):
+        return self.connection.cursor()
+
+    def commit(self):
+        return self.connection.commit()
+
+    def close(self):
+        return self.connection.close()
+
 
 def capturedate(notas):
     result = []
