@@ -14,20 +14,26 @@ CODES = [
 ]
 
 class note:
-    def __init__(self, nmov, date, client, product, color):
-        self.nmov = nmov
-        self.date = date
-        self.client = client 
-        self.product = product
-        self.color = color
+    def __init__(self, note):
+        self.note = note or ""
 
-    def get_it(self, product: list, regex: str) -> list:
-        """Função que retorna qualquer item dando uma lista e um padrao regex""""
-        output = []
-        for item in product:
-            result = re.search(regex)
-            output.append(result)
-        return output
+    def nmov(self):
+        m = re.search(r'Nr:\s*(\d+)', self.note)
+        return m.group(1) if m else None
+
+    def date(self):
+        m re.search(r'Emissao:\s*(\d{2}/\d{2}/\d{4})', self.note)
+        return m.group(1) if m else None
+
+    def client(self):
+        m = re.search(r'Cliente\.\:\s*(.+)', self.note)
+        return m.group(1).strip() if m else None
+
+    def product(self):
+        return re.findall(r'(\d{6}\s+.+?\s+UN\s+\w+\s+[\d,.]+\s+[\d,.]+)', self.note)
+
+    def color(self):
+        return re.findall(r'#\w+', self.note)
 
 class paint_can(note):
     
