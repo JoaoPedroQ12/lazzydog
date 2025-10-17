@@ -5,15 +5,8 @@ import sqlite3
 from pathlib import Path
 
 PATH = Path(__file__).resolve().parent
-CODES = [
-    '020036', '020035', '020034', '020033', '020032', '020031',
-    '020030', '020029', '020028', '020027', '020026', '020025',
-    '020024', '020023', '020022', '020021', '020020', '020019',
-    '020018', '020017', '020016', '020015', '020014', '020013',
-    '020012', '020037', '020038', '020039'
-]
 
-class note:
+class Capture_date:
     def __init__(self, note):
         self.note = note or ""
 
@@ -32,27 +25,29 @@ class note:
     def product(self):
         return re.findall(r'(\d{6}\s+.+?\s+UN\s+\w+\s+[\d,.]+\s+[\d,.]+)', self.note)
 
-    def color(self):
-        return re.findall(r'#\w+', self.note)
 
-class paint_can(note):
-    
+class Paint_date(Capture_date): 
+
     CODES = {'020036':'A', '020035':'A', '020034':'A', '020033':'C', '020032':'B', '020031':'A',
              '020030':'C', '020029':'B', '020028':'A', '020027':'C', '020026':'B', '020025':'A',
              '020024':'C', '020023':'B', '020022':'A', '020021':'B', '020020':'A', '020019':'B',
              '020018':'A', '020017':'C', '020016':'B', '020015':'A', '020014':'C', '020013':'B',
              '020012':'A', '020037':'A', '020038':'B', '020039':'C'}
 
+    def __init__(self, note=None):
+        super().__init__(note)
 
-    def base_paint(self, code: str) -> str:
+    def color(self):
+        return re.findall(r'#\w', self.note)
+
+    def base_produto(self, code: str) -> str:
         """Função retorna a base referente ao codigo da tinta"""
-        return CODES[code]
-            
+        return self.CODES.get(code, None)            
 
-class verefication(note):
-    pass
+    """Fazer um jeito de essa classe ter um metodo que faça uma busca em um db e esse venha retornar a base da cor, busque codigo e retorna baseapelid"""
 
-class conection(verefication):
+
+class connection():
     def __ini__(self, path)
         self.path = path
         self.connection = connect(self.path)
@@ -73,21 +68,6 @@ class conection(verefication):
     def close(self):
         return self.connection.close()
 
-
-def capturedate(notas):
-    result = []
-    for nota in notas:
-        with open(nota, encoding="latin-1") as file:
-            content = file.read()
-            nmov = re.search(r'Nr:\s*(\d+)', content)
-            date = re.search(r'Emissao:\s*(\d{2}/\d{2}/\d{4})', content)
-            client = re.search(r'Cliente\.\:\s*(.+)', content)
-            product = re.findall(r'(\d{6}\s+.+?\s+UN\s+\w+\s+[\d,.]+\s+[\d,.]+)', content)
-            color = re.findall(r'#\w+', content)
-
-            if nmov and date and client and product:
-                result.append((nmov.group(), date.group(), client.group(), product, color))
-    return result
 
 def inserintodb(DB, nmov, date, client, products, color):
     cursor = DB.cursor()
@@ -116,24 +96,11 @@ def connectdb():
     except:
         print("Something was wrong in connect db.")
 
-nmov = ""
-date = ""
-client = ""
-product = ""
-color = ""
+file = list(glob.glob(os.path.join("point", "*.txt")))
+db_path = PATH.joinpath("db" / "dbink.db")
 
-db = connectdb()
-
-path_db = Path(__file__).resolve().parent
-
-#Point for acess TXT
-notas = list(glob.glob(os.path.join("point", "*.txt")))
-
-results = capturedate(notas)
-
-for date in results:
-    nmov, date, client, product, color = date
-    inserintodb(db, nmov, date, client, product, color)
+db = connection(db_path)
+notas = note(file)
 
 delete_file(notas)
 db.close()
