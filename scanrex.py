@@ -34,6 +34,8 @@ class Paint_date(Capture_date):
              '020018':'A', '020017':'C', '020016':'B', '020015':'A', '020014':'C', '020013':'B',
              '020012':'A', '020037':'A', '020038':'B', '020039':'C'}
 
+    PATH_DB = "latex.sqlite"
+
     def __init__(self, note=None):
         super().__init__(note)
 
@@ -44,8 +46,18 @@ class Paint_date(Capture_date):
         """Função retorna a base referente ao codigo da tinta"""
         return self.CODES.get(code, None)            
 
-    """Fazer um jeito de essa classe ter um metodo que faça uma busca em um db e esse venha retornar a base da cor, busque codigo e retorna baseapelid"""
-
+    def busca_cor(self, color):
+        resultado = None
+        try:
+            con = sqlite3.connect(self.PATH_DB)
+            cursor = con.cursor()
+            cursor.execute("SELECT baseapelid FROM latex WHERE codigo = ?",(color,))
+            linha = cursor.fetchone()
+            if linha:
+                restultado = linha[0]
+        except Exception as e:
+            print(f"Houve um erro na busca_cor erro:{e}")
+        return resultado
 
 class connection():
     def __ini__(self, path)
