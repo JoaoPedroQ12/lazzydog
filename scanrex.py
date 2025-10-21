@@ -1,119 +1,47 @@
-import os
-import re
+from ObjectRex import Capture_date, Paint_date, Database
 import glob
 import sqlite3
-from pathlib import Path
+import os
 
-PATH = Path(__file__).resolve().parent
+PATH_POINT = "point"
+PATH_DB = "db/dbink.db"
 
-class Capture_date:
-    def __init__(self, note):
-        self.note = note or ""
+def dell(file):
+    return os.remove(file)
 
-    def nmov(self):
-        m = re.search(r'Nr:\s*(\d+)', self.note)
-        return m.group(1) if m else None
+product_ink = []
+codes = []
+db = Database(PATH_DB)
+index = 0
 
-    def date(self):
-        m re.search(r'Emissao:\s*(\d{2}/\d{2}/\d{4})', self.note)
-        return m.group(1) if m else None
+nota_file = next(iter(glob.glob(PATH_POINT +  "/*.txt", recursive=False)))
 
-    def client(self):
-        m = re.search(r'Cliente\.\:\s*(.+)', self.note)
-        return m.group(1).strip() if m else None
+if not nota_file:
+	print("Não ha notas")
+else:
+	nota = Capture_date(nota_file)
+	paint_date = Paint_date(nota_file)
 
-    def product(self):
-        return re.findall(r'(\d{6}\s+.+?\s+UN\s+\w+\s+[\d,.]+\s+[\d,.]+)', self.note)
+	for i, product in enumerate(nota.product()):
+		if paint_date.base_produto(nota.code_product()[i]) is not None:
+			product_ink.append(product)
+			codes.append(nota.code_product()[i])
+			
+	if product_ink:
+		cor = paint_date.color()
+		for i in codes:
+			for j in cor:
+				if paint_date.busca_cor(j) != paint_date.base_produto(i):
+					index += 1
+	else:
+		print("Não a produtos")
 
+	if index >= len(product_ink):
+			print(f"[ATENÇÂO] Algumas das bases não condiz com a cor, por favor de uma olhada na nota!.\nNúmero: {nota.nmov()}\nData: {nota.date()}\nCliente: {nota.client()}")
+	else:
+		db.conectar()
+		for item in product_ink:
+			db.executar("INSERT INTO recordink (nmov, client, data, produto, cor, obs) VALUES (?, ?, ?, ?, ?, ?)", (nota.nmov(), nota.client(), nota.date(), item, str(paint_date.color()), nota.observ()))
 
-class Paint_date(Capture_date): 
-
-    CODES = {'020036':'A', '020035':'A', '020034':'A', '020033':'C', '020032':'B', '020031':'A',
-             '020030':'C', '020029':'B', '020028':'A', '020027':'C', '020026':'B', '020025':'A',
-             '020024':'C', '020023':'B', '020022':'A', '020021':'B', '020020':'A', '020019':'B',
-             '020018':'A', '020017':'C', '020016':'B', '020015':'A', '020014':'C', '020013':'B',
-             '020012':'A', '020037':'A', '020038':'B', '020039':'C'}
-
-    PATH_DB = "latex.sqlite"
-
-    def __init__(self, note=None):
-        super().__init__(note)
-
-    def color(self):
-        return re.findall(r'#\w', self.note)
-
-    def base_produto(self, code: str) -> str:
-        """Função retorna a base referente ao codigo da tinta"""
-        return self.CODES.get(code, None)            
-
-    def busca_cor(self, color):
-        resultado = None
-        try:
-            con = sqlite3.connect(self.PATH_DB)
-            cursor = con.cursor()
-            cursor.execute("SELECT baseapelid FROM latex WHERE codigo = ?",(color,))
-            linha = cursor.fetchone()
-            if linha:
-                restultado = linha[0]
-        except Exception as e:
-            print(f"Houve um erro na busca_cor erro:{e}")
-        return resultado
-
-class connection():
-    def __ini__(self, path)
-        self.path = path
-        self.connection = connect(self.path)
-
-    def connect(self, path_db):
-        try:
-            db = sqlite3.connect(path_db)
-            return db
-        except Excepetion as e:
-            print(f'Houve um erro ao conectar no db:{e}')
-    
-    def cursor(self):
-        return self.connection.cursor()
-
-    def commit(self):
-        return self.connection.commit()
-
-    def close(self):
-        return self.connection.close()
-
-
-def inserintodb(DB, nmov, date, client, products, color):
-    cursor = DB.cursor()
-    try:
-        for item in products:
-            for code in CODES:
-                if item.find(code) != -1:
-                    cursor.execute("""INSERT INTO recordink(nmov, client, data, produto, cor) VALUES(?, ?, ?, ?, ?)""", (nmov, client.strip(), date, item, str(color)))
-                    DB.commit()
-    except Exception as e:
-        print(f"Houve um erro em inserir no DB: {e}")
-    finally:
-        cursor.close()
-
-def delete_file(files):
-    try:
-        for file in files:
-            os.remove(file)
-    except Exception as e:
-        print(f"Houve um erro ao deletar os arquivos {e}")
-    
-def connectdb():
-    try:
-        db = sqlite3.connect(PATH.joinpath("db") / "dbink.db")
-        return db
-    except:
-        print("Something was wrong in connect db.")
-
-file = list(glob.glob(os.path.join("point", "*.txt")))
-db_path = PATH.joinpath("db" / "dbink.db")
-
-db = connection(db_path)
-notas = note(file)
-
-delete_file(notas)
-db.close()
-
+dell(nota_file)
+db.desconectar()
